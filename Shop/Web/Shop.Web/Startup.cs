@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shop.Data;
 using Shop.Data.Models;
+using Shop.Services;
 
 namespace Shop.Web
 {
@@ -30,19 +31,20 @@ namespace Shop.Web
         {
             services.AddDbContext<ShopDbContext>(option =>
                 option.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConection")
+                    Configuration.GetConnectionString("DefaultConnection")
+                    
                     )
             );
-
             services.AddIdentity<ShopUser, IdentityRole>()
                 .AddEntityFrameworkStores<ShopDbContext>()
                 .AddDefaultTokenProviders();
+            services.AddTransient<IProductService, ProductService>();
 
             services.Configure<IdentityOptions>
                 (
-                
-                    options => 
-                            { 
+
+                    options =>
+                            {
                                 options.Password.RequiredLength = 3;
                                 options.Password.RequireLowercase = false;
                                 options.Password.RequireNonAlphanumeric = false;
@@ -54,6 +56,7 @@ namespace Shop.Web
 
                             }
                 );
+            
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -61,6 +64,27 @@ namespace Shop.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetRequiredService<ShopDbContext>())
+                {
+                    context.Database.EnsureCreated();
+                    if(!context.Roles.Any())
+                    {
+                        context.Roles.Add(new IdentityRole {
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
+                        context.Roles.Add(new IdentityRole {
+                            Name = "User",
+                            NormalizedName = "USER"
+                           
+                        });
+                        context.SaveChanges();
+                    }
+                }
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -78,12 +102,17 @@ namespace Shop.Web
             app.UseAuthentication();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                  name: "areas",
+                  template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+              
             });
         }
     }
