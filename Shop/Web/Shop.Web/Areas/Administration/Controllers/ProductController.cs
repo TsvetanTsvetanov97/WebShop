@@ -9,8 +9,8 @@ using Shop.Web.BindingModels;
 
 namespace Shop.Web.Areas.Administration.Controllers
 {
-
-    public class ProductController : Controller
+    [Area("Administration")]
+    public class ProductController : AdminController
     {
         private IProductService productService;
         public ProductController(IProductService productService)
@@ -37,22 +37,19 @@ namespace Shop.Web.Areas.Administration.Controllers
             {
                 Name = productCreateBindingModel.Name,
                 Price = productCreateBindingModel.Price,
-                Category = new CategoryServiceModel() { Name = productCreateBindingModel.Name }
+                Category = new CategoryServiceModel() { Name = productCreateBindingModel.Category }
             };
             productService.Create(productServiceModel);
             return Redirect("/");
         }
 
-        [HttpGet]
-        [Route("Administration/Category/Create")]
+        [HttpGet("Administration/Category/Create")]
         public IActionResult CreateCategory()
         {
             return View();
         }
 
-        [HttpPost]
-        [Route("Administration/Category/Create")]
-    
+        [HttpPost("Administraion/Category/Create")]
         public  IActionResult CreateCategory(CategoryCreateBindingModel categoryCreateBindingModel)
         {
             CategoryServiceModel categoryServiceModel = new CategoryServiceModel

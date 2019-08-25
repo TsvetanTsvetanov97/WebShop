@@ -56,7 +56,16 @@ namespace Shop.Web
 
                             }
                 );
-            
+            services.AddAuthorization(options =>
+            {
+
+                options.AddPolicy("Admin",
+                    authBuilder =>
+                    {
+                        authBuilder.RequireRole("Administrators");
+                    });
+
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

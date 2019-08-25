@@ -22,7 +22,8 @@ namespace Shop.Services
             Product product = new Product
             {
                 Name = productServiceModel.Name,
-                Price = productServiceModel.Price
+                Price = productServiceModel.Price,
+                Category = shopDbContext.Categories.Where(c => c.Name == productServiceModel.Category.Name).FirstOrDefault()               
             };
 
             shopDbContext.Products.Add(product);

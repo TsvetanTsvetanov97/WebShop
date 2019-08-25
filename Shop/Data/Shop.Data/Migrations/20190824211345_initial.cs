@@ -2,10 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-
 namespace Shop.Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -177,6 +176,7 @@ namespace Shop.Data.Migrations
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Price = table.Column<decimal>(nullable: false),
+                    Picture = table.Column<string>(nullable: true),
                     CategoryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
