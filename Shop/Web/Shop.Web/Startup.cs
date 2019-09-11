@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shop.CloudinaryService;
 using Shop.Data;
 using Shop.Data.Models;
 using Shop.Services;
@@ -39,6 +41,7 @@ namespace Shop.Web
                 .AddEntityFrameworkStores<ShopDbContext>()
                 .AddDefaultTokenProviders();
             services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<ICloudinaryService, CloudinaryService.CloudinaryService>();
 
             services.Configure<IdentityOptions>
                 (
@@ -66,6 +69,14 @@ namespace Shop.Web
                     });
 
             });
+            
+
+            Account account = new Account(Configuration["Cloudinary:Name"], Configuration["Cloudinary:ApiKey"], Configuration["Cloudinary:ApiSecret"]);
+
+            Cloudinary cloudinary = new Cloudinary(account);
+
+            services.AddSingleton(cloudinary);
+            
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

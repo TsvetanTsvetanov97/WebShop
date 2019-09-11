@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Shop.CloudinaryService;
 using Shop.Services;
 using Shop.Services.Models;
 using Shop.Web.BindingModels;
@@ -13,9 +14,11 @@ namespace Shop.Web.Areas.Administration.Controllers
     public class ProductController : AdminController
     {
         private IProductService productService;
-        public ProductController(IProductService productService)
+        private ICloudinaryService cloudinaryService;
+        public ProductController(IProductService productService,ICloudinaryService cloudinaryService)
         {
             this.productService = productService;
+            this.cloudinaryService = cloudinaryService;
         }
 
         [HttpGet]
@@ -26,18 +29,19 @@ namespace Shop.Web.Areas.Administration.Controllers
             {
                 Name = c.Name
             });
-          return  View("Create");
+          return View("Create");
         }
 
         [HttpPost]
         [Route("Administration/Product/Create")]
-        public IActionResult Create(ProductCreateBindingModel productCreateBindingModel)
+        public async Task<IActionResult> Create(ProductCreateBindingModel productCreateBindingModel)
         {
             ProductServiceModel productServiceModel = new ProductServiceModel
             {
                 Name = productCreateBindingModel.Name,
                 Price = productCreateBindingModel.Price,
-                Category = new CategoryServiceModel() { Name = productCreateBindingModel.Category }
+                Category = new CategoryServiceModel() { Name = productCreateBindingModel.Category },
+                Picture = await cloudinaryService.UploadFile(productCreateBindingModel.Picture)
             };
             productService.Create(productServiceModel);
             return Redirect("/");

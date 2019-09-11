@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Shop.Web.Areas.Administration.Controllers
 {
-    [Authorize("Admin")]
     public abstract class AdminController : Controller
     {
     }

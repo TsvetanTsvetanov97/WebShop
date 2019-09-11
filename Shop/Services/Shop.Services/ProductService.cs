@@ -1,4 +1,5 @@
-﻿using Shop.Data;
+﻿
+using Shop.Data;
 using Shop.Data.Models;
 using Shop.Services.Models;
 using System;
@@ -23,7 +24,8 @@ namespace Shop.Services
             {
                 Name = productServiceModel.Name,
                 Price = productServiceModel.Price,
-                Category = shopDbContext.Categories.Where(c => c.Name == productServiceModel.Category.Name).FirstOrDefault()               
+                Category = shopDbContext.Categories.Where(c => c.Name == productServiceModel.Category.Name).FirstOrDefault(),
+                Picture = productServiceModel.Picture
             };
 
             shopDbContext.Products.Add(product);
